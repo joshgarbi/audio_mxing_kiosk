@@ -110,10 +110,10 @@ class SimpleApp:
         self.fader1_label = ttk.Label(self.fader1_container, text="Fader 1", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader1_label.pack()
         self.fader1 = ttk.Scale(self.fader1_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader1_value, style="Custom.Vertical.TScale")
-        self.fader1.set(0) # Set default higher to see colors immediately
         self.fader1.pack()
         self.fader1_value = ttk.Label(self.fader1_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
         self.fader1_value.pack()
+        self.fader1.set(0) # Set default after label exists so callback is safe
 
         self.level1_label = ttk.Label(self.fader_group1_label, font=("Helvetica", 12), background="", borderwidth=0)
         self.level1_label.pack(pady=(10,0))
@@ -133,10 +133,10 @@ class SimpleApp:
         self.fader2_label = ttk.Label(self.fader2_container, text="Fader 2", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader2_label.pack()
         self.fader2 = ttk.Scale(self.fader2_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader2_value, style="TScale")
-        self.fader2.set(0)
         self.fader2.pack()
         self.fader2_value = ttk.Label(self.fader2_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
         self.fader2_value.pack()
+        self.fader2.set(0)
 
         self.level2_label = ttk.Label(self.fader_group2_label, font=("Helvetica", 12), background="", borderwidth=0)
         self.level2_label.pack(pady=(10,0))
@@ -155,10 +155,10 @@ class SimpleApp:
         self.fader3_label = ttk.Label(self.fader3_container, text="Fader 3", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader3_label.pack()
         self.fader3 = ttk.Scale(self.fader3_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader3_value, style="TScale")
-        self.fader3.set(0)  
         self.fader3.pack()
         self.fader3_value = ttk.Label(self.fader3_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
         self.fader3_value.pack()
+        self.fader3.set(0)
 
         self.level3_label = ttk.Label(self.fader_group3_label, font=("Helvetica", 12), background="", borderwidth=0)
         self.level3_label.pack(pady=(10,0))
