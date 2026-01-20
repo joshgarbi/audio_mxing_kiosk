@@ -125,8 +125,8 @@ class SimpleApp:
                        sliderlength=80, sliderrelief='solid', width=70, bd=0)
         
         self.fader1.pack()
-        # self.fader1_value = ttk.Label(self.fader1_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        # self.fader1_value.pack()
+        self.fader1_value = ttk.Label(self.fader1_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
+        self.fader1_value.pack()
         self.fader1.set(0) # Set default after label exists so callback is safe
 
         self.level1_label = ttk.Label(self.fader_group1_label, font=("Helvetica", 12), background="", borderwidth=0)
