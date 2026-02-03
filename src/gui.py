@@ -3,8 +3,9 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import random
 from PIL import Image, ImageTk
-from audiometer import GradientAudioMeter
-from uihelper import drawfader, ip_settings
+from audiometer import GradientAudioMeter, change_fader1_value, update_fader1_level
+from uihelper import drawfaderbank, ip_settings
+
 ## Most code was generated with ChatGPT 5.2 and rewritten to fit needs
 
 class SimpleApp:
@@ -13,13 +14,6 @@ class SimpleApp:
         
         self.width = width     
         self.height = height   
-        
-        # Might adjust this line to work better with console API
-        self.update_interval = 100  # milliseconds
-        
-        self.fader_levels = {
-            "fader1": 0,
-        }
         
         self.ip = "127.0.0.1"
         self.port = "00000"
@@ -31,16 +25,19 @@ class SimpleApp:
         style.configure("secondary.TButton", font=("Arial", 36), padding=12)
         style.configure("tertiary.TFrame", background="#FF00B3")
         
-        drawfader(self, master)
+        drawfaderbank(self, master)
         
-        self.update_fader1_level()
+        pil_image = Image.open("power.png")
+        pil_image = pil_image.resize((75, 75))
+        self.tk_image = ImageTk.PhotoImage(pil_image)
+
         self.button = ttk.Button(
             master,
-            text="⏻",
+            image=self.tk_image,
             bootstyle="danger",
-            command=self.quit_app,
-            
+            command=self.quit_app,  
         )
+
         self.button.configure(style="danger.TButton")
         self.button.place(x=20, y=20, width=120, height=120)
         
@@ -99,20 +96,14 @@ class SimpleApp:
         
         ip_settings(self, settings_window)
 
-    def change_fader1_value(self, value):       
-        self.fader_levels["fader1"] = value
-    
-    def update_fader1_level(self):
-        level = self.fader1slider.get()
-        noise = random.randint(-5,5)
-        level += noise
-        self.level1.set_level(level)
-        self.master.after(self.update_interval, self.update_fader1_level)
+
         
 if __name__ == "__main__":
     app = ttk.Window(themename="darkly", scaling=1.5) 
-    width = app.winfo_screenwidth()
-    height = app.winfo_screenheight()
+    # width = app.winfo_screenwidth()
+    # height = app.winfo_screenheight()
+    width = 1280
+    height = 720
     print(f"Screen size: {width}x{height}")
     SimpleApp(width, height, app)
     app.attributes("-fullscreen", True)
