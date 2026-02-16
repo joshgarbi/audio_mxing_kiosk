@@ -1,146 +1,109 @@
+import tkinter as tk  # Add at top of file
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import random
-import test
+from PIL import Image, ImageTk
+from audiometer import GradientAudioMeter, change_fader1_value, update_fader1_level
+from uihelper import drawfaderbank, ip_settings
 
-# A simple GUI application with audio faders
+## Most code was generated with ChatGPT 5.2 and rewritten to fit needs
+
 class SimpleApp:
-    def __init__(self, master):
+    def __init__(self, width, height, master):
         self.master = master
-        master.title("Audio Fader Control")
-    
-        style = ttk.Style()
-        style.configure("Gradient.Vertical.TProgressbar", troughcolor="black", bordercolor="black", background="green")
-
-        # Create a canvas for the gradient background
-        self.canvas = ttk.Canvas(master, width=1240, height=720, highlightthickness=0)
-        self.canvas.bind("<Configure>", self.on_resize)
-        self.canvas.pack(fill="both", expand=True)
-        self.draw_gradient()
-
-        # Frame to hold the content
-        self.content_frame = ttk.Frame(master, style="TFrame")
-        self.content_frame.place(relx=0.5, rely=0.5, anchor="center")
-
-        self.label = ttk.Label(self.content_frame, font=("Helvetica", 16), background="", borderwidth=0)
-        self.label.pack(pady=10)
-
-        # Frame to hold the faders
-        self.fader_frame = ttk.Frame(self.content_frame, style="TFrame", borderwidth=0)
-        self.fader_frame.pack(pady=20)
-
-        # Fader group 1
-        self.fader_group1_label = ttk.Frame(self.fader_frame, style="TFrame", borderwidth=0)
-        self.fader_group1_label.pack(side=LEFT, padx=20)
-
-
-        # Fader 1
-        self.fader1_container = ttk.Frame(self.fader_group1_label, style="TFrame", borderwidth=0)
-        self.fader1_container.pack(side=LEFT, padx=10)
-        self.fader1_label = ttk.Label(self.fader1_container, text="Fader 1", font=("Helvetica", 12), background="", borderwidth=0)
-        self.fader1_label.pack()
-        self.fader1 = ttk.Scale(self.fader1_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader1_value, style="TScale")
-        self.fader1.pack()
-        self.fader1_value = ttk.Label(self.fader1_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        self.fader1_value.pack()
-
-        #Level indicator 1 (should turn green/yellow/red based on level)
-        self.level1_label = ttk.Label(self.fader_group1_label, font=("Helvetica", 12), background="", borderwidth=0)
-        self.level1_label.pack(pady=(10,0))
-        self.level1 = test.GradientAudioMeter(self.fader_group1_label, width=25, height=200)
-    
-        self.level1.pack(side=RIGHT, pady=5)
-        # level should bounce around fader value
-        self.update_level1()
         
-        # Fader group 2
-        self.fader_group2_label = ttk.Frame(self.fader_frame, style="TFrame", borderwidth=0)
-        self.fader_group2_label.pack(side=LEFT, padx=20)
+        self.width = width     
+        self.height = height   
+        
+        style = ttk.Style()
+        # Configure a red (danger) button style with larger font/padding
+        style.configure("danger.TButton", font=("Arial", 46), padding=16,)
+        style.configure("Dialog.TButton", font=("Arial", 18), padding=12)
+        style.configure("secondary.TButton", font=("Arial", 36), padding=12)
+        style.configure("tertiary.TFrame", background="#FF00B3")
+        
+        drawfaderbank(self, master)
+        
+        pil_image = Image.open("power.png")
+        pil_image = pil_image.resize((75, 75))
+        self.tk_image = ImageTk.PhotoImage(pil_image)
 
-        # Fader 2
-        self.fader2_container = ttk.Frame(self.fader_group2_label, style="TFrame", borderwidth=0)
-        self.fader2_container.pack(side=LEFT, padx=10)
-        self.fader2_label = ttk.Label(self.fader2_container, text="Fader 2", font=("Helvetica", 12), background="", borderwidth=0)
-        self.fader2_label.pack()
-        self.fader2 = ttk.Scale(self.fader2_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader2_value, style="TScale")
-        self.fader2.pack()
-        self.fader2_value = ttk.Label(self.fader2_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        self.fader2_value.pack()
+        self.button = ttk.Button(
+            master,
+            image=self.tk_image,
+            bootstyle="danger",
+            command=self.quit_app,  
+        )
 
-        # Level indicator 2 (should turn green/yellow/red based on level)
-        self.level2_label = ttk.Label(self.fader_group2_label, font=("Helvetica", 12), background="", borderwidth=0)
-        self.level2_label.pack(pady=(10,0))
-        self.level2 = ttk.Progressbar(self.fader_group2_label, orient=VERTICAL, length=200, mode='determinate', maximum=100, style="success.Vertical.TProgressbar")
-        self.level2.pack(side=RIGHT, pady=5)
-        # level should bounce around fader value
-        self.update_level2()
-    
-        # Fader group 3 
-        self.fader_group3_label = ttk.Frame(self.fader_frame, style="TFrame", borderwidth=0)
-        self.fader_group3_label.pack(side=LEFT, padx=20)
+        self.button.configure(style="danger.TButton")
+        self.button.place(x=20, y=20, width=120, height=120)
+        
+        ## settings button in bottom left to open settings
+        self.settings_button = ttk.Button(
+            master,
+            text="⚙",
+            bootstyle="secondary",
+            command=self.openSettings,
+        )
+        self.settings_button.configure(style="secondary.TButton")
+        self.settings_button.place(x=20, y=self.height - 140, width=120, height=120)
+        
+        
+    def quit_app(self):
+        sure_window = ttk.Toplevel(self.master)
+        sure_window.title("Confirm Exit")
+        # Frameless dialog
+        sure_window.overrideredirect(True)
 
-        # Fader 3
-        self.fader3_container = ttk.Frame(self.fader_group3_label, style="TFrame", borderwidth=0)
-        self.fader3_container.pack(side=LEFT, padx=10)
-        self.fader3_label = ttk.Label(self.fader3_container, text="Fader 3", font=("Helvetica", 12), background="", borderwidth=0)
-        self.fader3_label.pack()
-        self.fader3 = ttk.Scale(self.fader3_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader3_value, style="TScale")
-        self.fader3.pack()
-        self.fader3_value = ttk.Label(self.fader3_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        self.fader3_value.pack()
+        dialog_w, dialog_h = 800, 300
+        pos_x = max(0, (self.width - dialog_w) // 2)
+        pos_y = max(0, (self.height - dialog_h) // 2)
+        sure_window.geometry(f"{dialog_w}x{dialog_h}+{pos_x}+{pos_y}")
+        sure_window.resizable(False, False)
+        sure_window.attributes("-topmost", True)
+        
+        sure_window.configure(bg="#363C4D")
+        sure_window.grab_set()  # Make this window modal
+        
+        label = ttk.Label(sure_window, text="Power Off?", font=("Arial", 24), background="#363C4D", foreground="white")
+        label.pack(pady=20)
+        yes_button = ttk.Button(sure_window, width=16, text="Shut Down", bootstyle="danger", style="Dialog.TButton", command=self.master.destroy)
+        yes_button.pack(side="left", padx=30, pady=16)
+        no_button = ttk.Button(sure_window, width=16, text="Cancel", bootstyle="secondary", style="Dialog.TButton", command=sure_window.destroy)
+        no_button.pack(side="right", padx=30, pady=16)
+        
+    def openSettings(self):
+        settings_window = ttk.Toplevel(self.master)
+        settings_window.title("Settings")
+        settings_window.overrideredirect(True)  # Frameless dialog
+        
+        settings_window.geometry(f"{self.width}x{self.height}+0+0")
+        settings_window.resizable(False, False)
+        settings_window.attributes("-topmost", True)
+        
+        settings_window.configure(bg="#363C4D")
+        settings_window.grab_set()  # Make this window modal
+        
+        label = ttk.Label(settings_window, text="Settings", font=("Arial", 24), background="#363C4D", foreground="white")
+        label.pack(pady=20)
+        escape_button = ttk.Button(settings_window, width=16, text="Close Settings", bootstyle="secondary", style="Dialog.TButton", command=settings_window.destroy)
+        escape_button.pack(side="bottom", padx=30, pady=16)
+        
+        # settings_menu()
+        
+        ip_settings(self, settings_window)
 
-        # Level indicator 3
-        self.level3_label = ttk.Label(self.fader_group3_label, font=("Helvetica", 12), background="", borderwidth=0)
-        self.level3_label.pack(pady=(10,0))
-        self.level3 = ttk.Progressbar(self.fader_group3_label, orient=VERTICAL, length=200, mode='determinate', maximum=100, style="success.Vertical.TProgressbar")
-        self.level3.pack(side=RIGHT, pady=5)
-        self.update_level3()
 
-    def draw_gradient(self, size=(1240, 720)):
-        # Draw a vertical gradient from blue to white
-        width, height = size
-        for i in range(height):
-            r = int(90 * (i / height))
-            g = int(100 * (i / height))
-            b = int(130 * (i / height))
-            color = f"#{r:02x}{g:02x}{b:02x}"
-            self.canvas.create_line(0, i, width, i, fill=color)
-    
-    def on_resize(self, event):
-        self.canvas.delete("all")
-        self.draw_gradient((event.width, event.height))
-
-    def update_fader1_value(self, value):
-        self.fader1_value.config(text=f"{int(float(value))}")
-
-    def update_fader2_value(self, value):
-        self.fader2_value.config(text=f"{int(float(value))}")
-
-    def update_fader3_value(self, value):
-        self.fader3_value.config(text=f"{int(float(value))}")
-
-    def update_level1(self):
-        fader_value = self.fader1.get()
-        # Simulate level bouncing around fader value
-        level_value = max(0, min(100, int(fader_value + random.randint(-10, 10))))
-        self.level1['value'] = level_value
-        self.master.after(100, self.update_level1)
-       
-    def update_level2(self):
-        fader_value = self.fader2.get()
-        # Simulate level bouncing around fader value
-        level_value = max(0, min(100, int(fader_value + random.randint(-10, 10))))
-        self.level2['value'] = level_value
-        self.master.after(100, self.update_level2)
-
-    def update_level3(self):
-        fader_value = self.fader3.get()
-        # Simulate level bouncing around fader value
-        level_value = max(0, min(100, int(fader_value + random.randint(-10, 10))))
-        self.level3['value'] = level_value
-        self.master.after(100, self.update_level3)
-
+        
 if __name__ == "__main__":
-    app = ttk.Window(themename="darkly", scaling=1.5)  # Modern theme with larger scaling
-    SimpleApp(app)
+    app = ttk.Window(themename="darkly", scaling=1.5) 
+    # width = app.winfo_screenwidth()
+    # height = app.winfo_screenheight()
+    width = 1280
+    height = 720
+    print(f"Screen size: {width}x{height}")
+    SimpleApp(width, height, app)
+    app.attributes("-fullscreen", True)
+    app.resizable(False, False)
+    app.protocol("WM_DELETE_WINDOW", lambda: None)  # Disable window closing
     app.mainloop()

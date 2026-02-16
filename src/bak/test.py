@@ -1,3 +1,4 @@
+import tkinter as tk  # Add at top of file
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import random
@@ -67,22 +68,29 @@ class SimpleApp:
 
         style = ttk.Style()
 
-        # --- FIX 1: Keep a persistent reference to the image ---
-        # We use self.circle_photo so it isn't garbage collected
-        img = Image.open("fader.drawio.png").resize((20, 20))
-        self.circle_photo = ImageTk.PhotoImage(img)
-
-        # --- FIX 2: Define a Vertical Layout ---
-        # 1. Create the element using the persistent image reference
-        style.element_create("CustomSlider", "image", self.circle_photo)
+        # 1. Define a CUSTOM style for the VERTICAL Scale (Fader)
+   
         
         # 2. Define a VERTICAL layout. 
+        # style.configure("Custom.Vertical.TScale",
+        #     sliderrelief="flat",
+        #     sliderlength=60,      # Height of the rectangle handle
+        #     sliderwidth=40,       # Width of the rectangle handle
+        #     borderwidth=0
+        # )
+
+        # # Optional: Add a border/outline to make it more visible
+        
+        # style.map("Custom.Vertical.TScale",
+        #     background=[('active', '#4a9eff'), ('!active', '#2d7dd2')],
+        #     troughcolor=[('!disabled', '#1e1e1e')]
+        # )
         # Note: We use 'Vertical.Scale.trough' and place the slider inside it.
-        style.layout("Custom.Vertical.TScale",
-             [('Vertical.Scale.trough', 
-               {'children': [('CustomSlider', {'side': 'top', 'sticky': ''})],
-                'sticky': 'ns'})]
-        )
+        # style.layout("Custom.Vertical.TScale",
+        #      [('Vertical.Scale.trough', 
+        #        {'children': [('CustomSlider', {'side': 'top', 'sticky': ''})],
+        #         'sticky': 'ns'})]
+        # )
 
         # Create a canvas for the gradient background
         self.canvas = ttk.Canvas(master, width=1240, height=720, highlightthickness=0)
@@ -109,7 +117,13 @@ class SimpleApp:
         self.fader1_container.pack(side=LEFT, padx=10)
         self.fader1_label = ttk.Label(self.fader1_container, text="Fader 1", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader1_label.pack()
-        self.fader1 = ttk.Scale(self.fader1_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader1_value, style="Custom.Vertical.TScale")
+
+        self.fader1 = tk.Scale(self.fader1_container, from_=100, to=0, orient=VERTICAL, length=400, 
+                       command=self.update_fader1_value,
+                       bg='#2d7dd2', activebackground="#f3f5f7",
+                       troughcolor='#1e1e1e', highlightthickness=0,
+                       sliderlength=80, sliderrelief='solid', width=70, bd=0)
+        
         self.fader1.pack()
         self.fader1_value = ttk.Label(self.fader1_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
         self.fader1_value.pack()
@@ -119,7 +133,7 @@ class SimpleApp:
         self.level1_label.pack(pady=(10,0))
         
         # REPLACED Progressbar with Custom GradientAudioMeter
-        self.level1 = GradientAudioMeter(self.fader_group1_label, width=25, height=200)
+        self.level1 = GradientAudioMeter(self.fader_group1_label, width=25, height=400)
         self.level1.pack(side=RIGHT, pady=5)
         
         self.update_level1()
@@ -132,17 +146,23 @@ class SimpleApp:
         self.fader2_container.pack(side=LEFT, padx=10)
         self.fader2_label = ttk.Label(self.fader2_container, text="Fader 2", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader2_label.pack()
-        self.fader2 = ttk.Scale(self.fader2_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader2_value, style="TScale")
+
+        self.fader2 = tk.Scale(self.fader2_container, from_=100, to=0, orient=VERTICAL, length=400, 
+                       command=self.update_fader2_value,
+                       bg='#2d7dd2', activebackground='#4a9eff',
+                       troughcolor='#1e1e1e', highlightthickness=0,
+                       sliderlength=80, sliderrelief='solid', width=70, bd=0)
+        
         self.fader2.pack()
-        self.fader2_value = ttk.Label(self.fader2_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        self.fader2_value.pack()
+        # self.fader2_value = ttk.Label(self.fader2_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
+        # self.fader2_value.pack()
         self.fader2.set(0)
 
         self.level2_label = ttk.Label(self.fader_group2_label, font=("Helvetica", 12), background="", borderwidth=0)
         self.level2_label.pack(pady=(10,0))
 
         # REPLACED Progressbar with Custom GradientAudioMeter
-        self.level2 = GradientAudioMeter(self.fader_group2_label, width=25, height=200)
+        self.level2 = GradientAudioMeter(self.fader_group2_label, width=25, height=400)
         self.level2.pack(side=RIGHT, pady=5)
         self.update_level2()
     
@@ -154,17 +174,23 @@ class SimpleApp:
         self.fader3_container.pack(side=LEFT, padx=10)
         self.fader3_label = ttk.Label(self.fader3_container, text="Fader 3", font=("Helvetica", 12), background="", borderwidth=0)
         self.fader3_label.pack()
-        self.fader3 = ttk.Scale(self.fader3_container, from_=100, to=0, orient=VERTICAL, length=200, command=self.update_fader3_value, style="TScale")
+
+        self.fader3 = tk.Scale(self.fader3_container, from_=100, to=0, orient=VERTICAL, length=400, 
+                       command=self.update_fader3_value,
+                       bg='#2d7dd2', activebackground='#4a9eff',
+                       troughcolor='#1e1e1e', highlightthickness=0,
+                       sliderlength=80, sliderrelief='solid', width=70, bd=0)
+        
         self.fader3.pack()
-        self.fader3_value = ttk.Label(self.fader3_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
-        self.fader3_value.pack()
+        # self.fader3_value = ttk.Label(self.fader3_container, text="0", font=("Helvetica", 10), background="", borderwidth=0)
+        # self.fader3_value.pack()
         self.fader3.set(0)
 
         self.level3_label = ttk.Label(self.fader_group3_label, font=("Helvetica", 12), background="", borderwidth=0)
         self.level3_label.pack(pady=(10,0))
         
         # REPLACED Progressbar with Custom GradientAudioMeter
-        self.level3 = GradientAudioMeter(self.fader_group3_label, width=25, height=200)
+        self.level3 = GradientAudioMeter(self.fader_group3_label, width=25, height=400)
         self.level3.pack(side=RIGHT, pady=5)
         self.update_level3()
 
