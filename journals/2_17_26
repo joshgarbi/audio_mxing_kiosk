@@ -1,0 +1,26 @@
+
+# Meeting Notes – [2_17_26]
+*Begin copy and paste (Including blank space above):*
+**Josh Garbi**
+#### **Git-visible accomplishments since last meeting (include time):**
+
+| 6 Hours Total |
+- Drew Diagram to show interaction between files/functions/classes related to UI and API (2 hours) 
+- Called customer to touch base and show progress (1 hour)
+- wrote supporting Docs with hyperlinks (1 hour)
+- Finished initial setup of AHM16 and setup network to support tcp socket in python (1 hour)
+- Developed first API calls in python that change channel value based on GUI fader level. (1 hours)
+
+to see api use: https://github.com/joshgarbi/audio_mixing_kiosk/blob/main/src/ahm_control.py
+call to set the channel level is in FADER class when setting self.faderlevel
+
+### **Merged:**
+- ui (accidentally stayed on this after merge last week) 
+### **Unmerged:**
+- ui
+
+- **Work in progress since last meeting not yet on Git (include time):**
+- IMPORTANT: fix ci yaml to support tests on other branches (need git cleanup in general)
+- Docs 
+- **Things I need:**
+- N/A
